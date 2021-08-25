@@ -1,11 +1,14 @@
 #!/usr/bin/python3
-import binascii
+
+
+
+import os
 import time
 import queue
 import socket
-import random
 import threading
 from dnslib import *
+import dns.resolver
 
 
 def dnsListener(ip, port, in_queue, out_queue):
@@ -53,33 +56,22 @@ def buildResponse(in_queue, out_queue):
         domain = ""
         for item in req_data.questions[0].qname.label:
             domain += (item.decode('utf-8') + ".")
-        ip = "1.1.1.1"
+        try:
+            answer = dns.resolver.resolve(domain, 'A')
+        except dns.resolver.NoAnswer:
+            ip = "255.255.255.255"
+        for rr in answer:
+            print('======================')
+            print(rr)
+            print('======================')
+            ip = rr.address
+
         req_data.add_answer(RR(domain, ttl=60, rdata=A(ip)))
-        print('======================')
-        print('======================')
+
+
         resp = req_data.pack()
         out = {'resp' : resp, 'addr': req['addr']}
         out_queue.put(out)
-
-
-
-        # out_queue.put(out)
-
-
-        # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # server_address = (ip, random.randint(1025, 65535))
-        # sock.bind(server_address)
-        # msg = resp.pack()
-        # print("============================")
-        # print(msg)
-        # print("============================")
-        # msg = bytes(msg)
-        # print("============================")
-        # print(msg)
-        # print("============================")
-
-        # sock.sendto(msg, req['addr'])
-
 
 
 def main():
@@ -95,6 +87,9 @@ def main():
 
     for thread in threads:
         thread.start()
+
+    # while True:
+
 
 
 
