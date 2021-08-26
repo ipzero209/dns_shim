@@ -9,7 +9,18 @@ from dnslib import *
 import externalcheck
 
 
+"""
+file locations
+/tmp
+names
 
+$sinkholefile="/tmp/sinkhole.txt";
+$categoryfile="/tmp/categories.txt";
+$customdomains="/tmp/custdomain.txt";
+
+
+
+"""
 
 
 
