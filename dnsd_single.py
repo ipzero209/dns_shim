@@ -7,6 +7,7 @@ import time
 import queue
 import socket
 import threading
+import cloudcheck
 from dnslib import *
 import dns.resolver
 
@@ -55,7 +56,8 @@ def buildResponse(req_dict):
         domain = ""
         for item in req_data.questions[0].qname.label:
             domain += (item.decode('utf-8') + ".")
-        act
+        action = cloudcheck.checkRequest(domain.rstrip('.'))
+        print(action)
         answer = ""
         try:
             answer = dns.resolver.resolve(domain, 'A')
