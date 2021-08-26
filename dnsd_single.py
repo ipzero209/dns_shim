@@ -55,6 +55,7 @@ def buildResponse(req_dict):
         domain = ""
         for item in req_data.questions[0].qname.label:
             domain += (item.decode('utf-8') + ".")
+        act
         answer = ""
         try:
             answer = dns.resolver.resolve(domain, 'A')
