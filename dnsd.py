@@ -2,14 +2,12 @@
 
 
 
-import os
-import time
-import queue
+
 import socket
-import threading
 import cloudcheck
 from dnslib import *
-import dns.resolver
+import externalcheck
+
 
 
 
@@ -39,12 +37,11 @@ def main():
 
         # Parse request - only handling A records at this time
         request = DNSRecord.parse(data)
-        print(request)
+
 
         # Extract requested domain as str
-        domain = ""
-        for item in request.questions[0].qname.label:
-            domain += (item.decode('utf-8') + ".")
+        domain = str(request.get_q().qname)
+
 
         # Check DNS Security Service for action (may not need rstrip for actual service)
         action = cloudcheck.checkRequest(domain.rstrip('.'))
@@ -53,31 +50,19 @@ def main():
         if action == "sinkhole":
             ip = "127.0.0.1"
         elif action == "resolve":
-            try:
-                answer = dns.resolver.resolve(domain, 'A')
-            except dns.resolver.NoAnswer:
-                ip = "255.255.255.255"
-            except dnslib.buffer.BufferError:
-                ip = "255.255.255.255"
-            except dnslib.dns.DNSError:
-                ip = "255.255.255.255"
-            except:
-                ip = "1.1.1.1"
-            if answer != "":
-                for rr in answer:
-                    print('======================')
-                    print(rr)
-                    print('======================')
-                    ip = rr.address
+            ip = externalcheck.externalResolver(domain)
         else:
             ip = "1.1.1.1"
 
-        # Add answer to request and pack for transmission
-        request.add_answer(RR(domain, ttl=60, rdata=A(ip)))
-        response = request.pack()
+        if ip == "timeout":
+            pass
+        else:
+            # Add answer to request and pack for transmission
+            request.add_answer(RR(domain, ttl=60, rdata=A(ip)))
+            response = request.pack()
 
-        # Send response
-        sock.sendto(response, address)
+            # Send response
+            sock.sendto(response, address)
 
 
 
