@@ -28,19 +28,28 @@ def loadSettings():
     sinkhole_ip = ""
     categories = set()
 
-    domain_file = open('/tmp/customdomains.txt')
-    for line in domain_file:
-        domains.add(line.strip())
-    domain_file.close()
+    try:
+        domain_file = open('/tmp/customdomains.txt')
+        for line in domain_file:
+            domains.add(line.strip())
+        domain_file.close()
+    except:
+        return None
 
-    sinkhole_file = open('/tmp/sinkhole.txt')
-    sinkhole_ip = sinkhole_file.readline().strip()
-    sinkhole_file.close()
+    try:
+        sinkhole_file = open('/tmp/sinkhole.txt')
+        sinkhole_ip = sinkhole_file.readline().strip()
+        sinkhole_file.close()
+    except:
+        return None
 
-    category_file = open('/tmp/categories.txt')
-    for line in category_file:
-        categories.add(line.strip())
-    category_file.close()
+    try:
+        category_file = open('/tmp/categories.txt')
+        for line in category_file:
+            categories.add(line.strip())
+        category_file.close()
+    except:
+        return None
 
     settings_dict = {'domains' : domains,
                      'sinkhole' : sinkhole_ip,
@@ -65,8 +74,13 @@ def main():
 
     settings = loadSettings()
 
+    while settings == None:
+        settings = loadSettings()
+        time.sleep(5)
+
     # Start resolver loop
     while True:
+
         # Create socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -107,7 +121,7 @@ def main():
         elif action == "resolve":
             ip = externalcheck.externalResolver(domain)
         else:
-            ip = "1.1.1.1"
+            ip = "timeout"
 
         if ip == "timeout":
             pass
@@ -118,6 +132,8 @@ def main():
 
             # Send response
             sock.sendto(response, address)
+        # Reload settings
+        settings = loadSettings()
 
 
 
