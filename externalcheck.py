@@ -8,7 +8,7 @@ def externalResolver(domain):
     try:
         answer = dns.resolver.resolve(domain, 'A')
     except dns.resolver.NoAnswer:
-        ip = "timeout5"
+        ip = "timeout"
     except dnslib.buffer.BufferError:
         ip = "timeout"
     except dnslib.dns.DNSError:
