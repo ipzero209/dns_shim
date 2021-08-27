@@ -35,7 +35,7 @@ def checkRequest(domain):
     category_list = []
     for x in range(len(response['sig-data'])):
         category_list.append(response['sig-data'][x]['final_category'])
-    print(category_list)
+    return category_list
 
     #Temp code for checking resolver flow
     # if domain == "www.reddit.com":

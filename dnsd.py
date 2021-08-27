@@ -2,7 +2,7 @@
 
 
 
-
+import time
 import socket
 import cloudcheck
 from dnslib import *
@@ -22,6 +22,37 @@ $customdomains="/tmp/custdomain.txt";
 
 """
 
+def loadSettings():
+
+    domains = set()
+    sinkhole_ip = ""
+    categories = set()
+
+    domain_file = open('/tmp/customdomains.txt')
+    for line in domain_file:
+        domains.add(line.strip())
+    domain_file.close()
+
+    sinkhole_file = open('/tmp/sinkhole.txt')
+    sinkhole_ip = sinkhole_file.readline().strip()
+    sinkhole_file.close()
+
+    category_file = open('/tmp/categories.txt')
+    for line in category_file:
+        categories.add(line.strip())
+    category_file.close()
+
+    settings_dict = {'domains' : domains,
+                     'sinkhole' : sinkhole_ip,
+                     'categories'  categories}
+    return settings_dict
+
+
+
+
+
+
+
 
 
 def main():
@@ -29,6 +60,10 @@ def main():
     #Define IP and port - Will need to read IP from environment
     server = "192.168.140.51"
     port = 1053
+
+    # Import settings
+
+    settings = loadSettings()
 
     # Start resolver loop
     while True:
@@ -55,11 +90,20 @@ def main():
 
 
         # Check DNS Security Service for action (may not need rstrip for actual service)
-        action = cloudcheck.checkRequest(domain.rstrip('.'))
+        results = cloudcheck.checkRequest(domain.rstrip('.'))
+
+        action = ""
+        for result in results:
+                if result in settings['domains']:
+                    action = "sinkhole"
+                elif result in settings['categories']:
+                    action = "sinkhole"
+                else:
+                    action = "resolve"
 
         # Set response IP according to response from checkRequest()
         if action == "sinkhole":
-            ip = "127.0.0.1"
+            ip = settings['sinkhole']
         elif action == "resolve":
             ip = externalcheck.externalResolver(domain)
         else:
