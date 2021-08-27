@@ -53,7 +53,7 @@ def loadSettings():
 
     settings_dict = {'domains' : domains,
                      'sinkhole' : sinkhole_ip,
-                     'categories'  categories}
+                     'categories' : categories}
     return settings_dict
 
 
@@ -67,7 +67,7 @@ def loadSettings():
 def main():
 
     #Define IP and port - Will need to read IP from environment
-    server = "192.168.140.51"
+    server = "0.0.0.0"
     port = 1053
 
     # Import settings

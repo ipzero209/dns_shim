@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import dnslib
 import dns.resolver
 
