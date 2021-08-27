@@ -108,18 +108,18 @@ def main():
         # Extract requested domain as str
         domain = str(request.get_q().qname)
 
+        if domain.rstrip('.') in settings['domains']:
+            action = "sinkhole"
+        else:
+            # Check DNS Security Service for action (may not need rstrip for actual service)
+            results = cloudcheck.checkRequest(domain.rstrip('.'))
 
-        # Check DNS Security Service for action (may not need rstrip for actual service)
-        results = cloudcheck.checkRequest(domain.rstrip('.'))
-
-        action = ""
-        for result in results:
-                if result in settings['domains']:
-                    action = "sinkhole"
-                elif result in settings['categories']:
-                    action = "sinkhole"
-                else:
-                    action = "resolve"
+            action = ""
+            for result in results:
+                    if result in settings['categories']:
+                        action = "sinkhole"
+                    else:
+                        action = "resolve"
 
         # Set response IP according to response from checkRequest()
         if action == "sinkhole":
