@@ -28,12 +28,14 @@ def loadSettings():
     sinkhole_ip = ""
     categories = set()
 
+    print('loading settings...')
     try:
         domain_file = open('/tmp/customdomains.txt')
         for line in domain_file:
             domains.add(line.strip())
         domain_file.close()
     except:
+        print('failed to load domains')
         return None
 
     try:
@@ -41,6 +43,7 @@ def loadSettings():
         sinkhole_ip = sinkhole_file.readline().strip()
         sinkhole_file.close()
     except:
+        print('failed to load sinkhole ip')
         return None
 
     try:
@@ -49,6 +52,7 @@ def loadSettings():
             categories.add(line.strip())
         category_file.close()
     except:
+        print('failed to load categories')
         return None
 
     settings_dict = {'domains' : domains,
@@ -76,11 +80,13 @@ def main():
 
     while settings == None:
         settings = loadSettings()
+        print(settings)
+        print('trying again in 5 seconds')
         time.sleep(5)
 
     # Start resolver loop
     while True:
-
+        print('ready')
         # Create socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
