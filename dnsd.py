@@ -128,6 +128,7 @@ def main():
         else:
             # Add answer to request and pack for transmission
             request.add_answer(RR(domain, ttl=60, rdata=A(ip)))
+
             response = request.pack()
 
             # Send response

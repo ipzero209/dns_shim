@@ -8,11 +8,11 @@ def externalResolver(domain):
     try:
         answer = dns.resolver.resolve(domain, 'A')
     except dns.resolver.NoAnswer:
-        ip = "255.255.255.255"
+        ip = "timeout5"
     except dnslib.buffer.BufferError:
-        ip = "255.255.255.255"
+        ip = "timeout"
     except dnslib.dns.DNSError:
-        ip = "255.255.255.255"
+        ip = "timeout"
     except dns.exception.Timeout:
         ip = "timeout"
     except:
